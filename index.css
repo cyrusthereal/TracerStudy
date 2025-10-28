@@ -1,0 +1,19 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.container {
+    height: 100vh;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qrParent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}   

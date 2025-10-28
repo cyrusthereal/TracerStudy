@@ -5,25 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRACER</title>
+    <link rel="stylesheet" href="./index.css">
 </head>
 
 <body>
     <!-- <h1>TRACERSTUDY</h1> -->
-    <canvas id="qr-container"></canvas>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <div class="container">
+        <div class="qrParent">
+            <h1>WELCOME! Please scan the QR code to continue.</h1>
+            <canvas id="qr-container"></canvas>
+            <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
-    <script>
-        const qrText = "./pages/forms.html"; // or any string
-        QRCode.toCanvas(document.getElementById("qr-container"), qrText, {
-            width: 200,
-            margin: 2
-        }, function (error) {
-            if (error) console.error(error);
-            else console.log("QR code generated!");
-        });
-    </script>
+            <script>
+                const qrText = "./pages/forms.html"; // or any string
+                QRCode.toCanvas(document.getElementById("qr-container"), qrText, {
+                    width: 350,
+                    margin: 2
+                }, function (error) {
+                    if (error) console.error(error);
+                    else console.log("QR code generated!");
+                });
+            </script>
+            <div>Login as <a href="./pages/admin.html">admin</a></div>
+        </div>  
+    </div>
 
-    <div>login as <a href="./pages/admin.html">admin</a></div>
 </body>
 
 </html>
