@@ -8,12 +8,12 @@
 </head>
 
 <body>
-    <h1>TRACERSTUDY</h1>
+    <!-- <h1>TRACERSTUDY</h1> -->
     <canvas id="qr-container"></canvas>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
     <script>
-        const qrText = "https://fb.com"; // or any string
+        const qrText = "./pages/forms.html"; // or any string
         QRCode.toCanvas(document.getElementById("qr-container"), qrText, {
             width: 200,
             margin: 2
@@ -22,6 +22,8 @@
             else console.log("QR code generated!");
         });
     </script>
+
+    <div>login as <a href="./pages/admin.html">admin</a></div>
 </body>
 
 </html>
