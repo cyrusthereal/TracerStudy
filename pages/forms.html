@@ -15,38 +15,47 @@
     <div class="container">
         <h1>Forms</h1>
 
+        <label for="fname"> Full Name</label>
         <div class="input-control">
-            <label for="fname"> Full Name</label>
-            <input id="fname" name="fname" type="text">
+            <div class="input">
+                <input id="fname" name="fname" type="text">
+            </div>
+            <div class="error"></div>
+        </div>
+        <label for="address"> Address</label>
+        <div class="input-control">
+            <div class="input">
+                <input id="address" name="address" type="text">
+            </div>
             <div class="error"></div>
         </div>
 
+        <label for="Birthday"> Birthday </label>
         <div class="input-control">
-            <label for="address"> Address</label>
-            <input id="address" name="fname" type="text">
+            <div class="input">
+                <input type="date" id="calendarPicker">
+            </div>
             <div class="error"></div>
         </div>
 
+        <label for="email"> Email</label>
         <div class="input-control">
-            <label for="Birthday"> Birthday </label>
-            <input type="date" id="calendarPicker">
+            <div class="input">
+                <input id="email" name="email" type="email">
+            </div>
             <div class="error"></div>
         </div>
 
+        <label for="cpnum"> Viber</label>
         <div class="input-control">
-            <label for="email"> Email</label>
-            <input id="email" name="email" type="email">
+            <div class="input">
+                <input id="cpnum" name="cpnum" type="text">
+            </div>
             <div class="error"></div>
         </div>
 
-
+        <label for="Course">Course:</label>
         <div class="input-control">
-            <label for="cpnum"> Viber</label>
-            <input id="cpnum" name="cpnum" type="text">
-            <div class="error"></div>
-        </div>
-
-        <div> <label for="Course">Course:</label>
             <select id="category">
                 <option value="BEED">BACHELOR OF ELEMENTARY EDUCATION</option>
                 <option value="BSED">BACHELOR OF SECONDARY EDUCATION Major in Values Education, Science, Mathematics and
@@ -77,16 +86,9 @@
                 <option value="BSCS">BACHELOR OF SCIENCE IN COMPUTER SCIENCE </option>
                 <option value="BSIT">BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY </option>s
                 <option value="BSECE">BACHELOR OF SCIENCE IN ELECTRONICS ENGINEERING </option>
-
-
- 
-
+            </select>
         </div>
-
-       <div> <button type="submit"> Submit </button> </div>
-
-
-
+        <button type="submit"> Submit </button>
 </body>
 
 </html>
