@@ -1,0 +1,18 @@
+
+body {
+    background: linear-gradient(to right, #A30000, #d12525, #F6D203);
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+  max-width: 700px;
+  width: 100%;
+  background-color: #fff;
+  padding: 25px 30px;
+  border-radius: 5px;
+  box-shadow: 0 5px 10px rgba(179, 19, 19, 0.15);
+}
