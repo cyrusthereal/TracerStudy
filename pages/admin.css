@@ -1,0 +1,33 @@
+body {
+    background: linear-gradient(to right, #A30000, #d12525, #F6D203);
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 30px 300px;
+    
+}
+table th, td{
+    border: 1px solid black;
+    background-color: #F8D101;
+    border-collapse: collapse;
+    padding: 10px;
+
+}
+tr:nth-child(odd) {
+  background-color: #f2f2f2;
+}
+th{
+    background-color: #5a5a5a;
+    color: #A30000;
+    }
+    
+#searchinput {
+   
+    font-size: 20px;
+    width: 200px;  
+    height: 30px;
+    border-radius: 50px;
+    background-color: #F8D101;
+    color: black;
+}
