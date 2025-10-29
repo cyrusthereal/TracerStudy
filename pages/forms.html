@@ -16,14 +16,15 @@
         <h1>Forms</h1>
 
         <label for="fname"> Full Name</label>
-        <div class="input-control">
-            <div class="input">
+        <div class="input-control" id="fnameContainer">
+            <div class="input" >
                 <input id="fname" name="fname" type="text">
             </div>
             <div class="error"></div>
         </div>
+
         <label for="address"> Address</label>
-        <div class="input-control">
+        <div class="input-control" id="addressContainer">
             <div class="input">
                 <input id="address" name="address" type="text">
             </div>
@@ -31,7 +32,7 @@
         </div>
 
         <label for="Birthday"> Birthday </label>
-        <div class="input-control">
+        <div class="input-control" id="birthdayContainer">
             <div class="input">
                 <input type="date" id="calendarPicker">
             </div>
@@ -39,7 +40,7 @@
         </div>
 
         <label for="email"> Email</label>
-        <div class="input-control">
+        <div class="input-control" id="emailContainer">
             <div class="input">
                 <input id="email" name="email" type="email">
             </div>
@@ -47,7 +48,7 @@
         </div>
 
         <label for="cpnum"> Viber</label>
-        <div class="input-control">
+        <div class="input-control" id="viberContainer">
             <div class="input">
                 <input id="cpnum" name="cpnum" type="text">
             </div>
@@ -56,7 +57,7 @@
 
         <label for="Course">Course:</label>
         <div class="input-control">
-            <select id="category">
+            <select id="category" class="category">
                 <option value="BEED">BACHELOR OF ELEMENTARY EDUCATION</option>
                 <option value="BSED">BACHELOR OF SECONDARY EDUCATION Major in Values Education, Science, Mathematics and
                     English</option>
@@ -80,7 +81,7 @@
                 <option value="BSIE">BACHELOR OF SCIENCE IN INDUSTRIAL ENGINEERING </option>
                 <option value="BSCPE">BACHELOR OF SCIENCE IN COMPUTER ENGINEERING </option>
                 <option value="BSCS">BACHELOR OF SCIENCE IN COMPUTER SCIENCE </option>
-                <option value="BSIT">BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY </option>s
+                <option value="BSIT">BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY </option>
                 <option value="BSECE">BACHELOR OF SCIENCE IN ELECTRONICS ENGINEERING </option>
                 <option value="ETEEAP">Expanded Tertiary Education, Equivalency and Accreditation Program (ETEEAP), BS
                     Business Administration </option>
@@ -88,7 +89,19 @@
                 <option value="TCP">TEACHER CERTIFICATE PROGRAM</option>
             </select>
         </div>
-        <button type="submit"> Submit </button>
+
+        <label for="Course">Course:</label>
+        <div class="input-control">
+            <select id="yearGraduated" class="yearGraduated">
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+            </select>
+        </div>
+        <button type="submit" id="submit-btn"> Submit </button>
+        
+        <script src="../script.js"></script>
 </body>
 
 </html>

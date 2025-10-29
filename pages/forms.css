@@ -18,6 +18,7 @@ body {
     padding: 25px 30px;
     border-radius: 5px;
     box-shadow: 0 5px 10px rgba(179, 19, 19, 0.15);
+    overflow: hidden;
 }
 
 .input-control {
@@ -49,4 +50,10 @@ input:focus {
     padding: 5px;
     background-color: #fff;
     border: 1px solid #ccc;
+}
+
+
+.focusContainer {
+  border: 2px solid #A30000;
+  transition: border 0.09s ease;
 }
