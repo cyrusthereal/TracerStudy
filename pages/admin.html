@@ -9,11 +9,12 @@
 </head>
 
 <body>
-    <h1>Admin</h1>
+    <h1>Records</h1>
     
-         <label for="searchby"> Search by: </label>
+        
         <div class="input-control">
-            <select id="searchinput">
+            <select id="searchinput" required>
+                <option value="" disabled selected>Search by:</option>
                 <option value="course">Course</option>
                 <option value="yrgrad">Year Graduated</option>
             </select>
@@ -21,6 +22,7 @@
     <br>
 
 
+<div class="datatable">
 
     <table id="searchbar">
         <thead>
@@ -44,6 +46,7 @@
             </tbody>
         </thead>
     </table>
+    </div>
     </div>
 </body>
 
