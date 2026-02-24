@@ -11,7 +11,7 @@ nameInput.addEventListener("keypress", function (e) {
     const char = e.key;
 
     // Allow letters and space
-    if (/^[a-zA-Z ]$/.test(char)) return;
+    if (/^[a-zA-Z -]$/.test(char)) return;
 
     // Allow one period only
     if (char === "." && !this.value.includes(".")) return;

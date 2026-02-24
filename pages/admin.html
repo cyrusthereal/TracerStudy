@@ -9,6 +9,11 @@
 </head>
 
 <body>
+    <script>
+        if (sessionStorage.getItem("adminAuth") !== "1") {
+            window.location.replace("login.html");
+        }
+    </script>
     <h1>Records</h1>
     
         

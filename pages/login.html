@@ -15,25 +15,45 @@
     <div class="container">
         <h1> Log in as Admin </h1>
 
-        <div class="input-control">
-            <label for="username"> username</label>
-            <input id="username" name="username" type="text">
-            <div class="error"></div>
-        </div>
+        <form id="login-form">
+            <div class="input-control">
+                <label for="username"> username</label>
+                <input id="username" name="username" type="text" required>
+                <div class="error"></div>
+            </div>
 
-        <div class="input-control">
-            <label for="password"> Password</label>
-            <input id="password" name="pword" type="password">
-            <div class="error"></div>
-        </div>
+            <div class="input-control">
+                <label for="password"> Password</label>
+                <input id="password" name="pword" type="password" required>
+                <div class="error"></div>
+            </div>
 
-       <div> <button type="log in"> Submit </button> </div>
+            <div><button type="submit"> Submit </button></div>
+        </form>
 
-        </div>
+        <p id="login-error" style="color: #c00; margin-top: 0.5rem; display: none;">Invalid username or password.</p>
+    </div>
 
+    <script>
+        (function () {
+            var ADMIN_USER = "admin";
+            var ADMIN_PASS = "admin123";
 
+            document.getElementById("login-form").addEventListener("submit", function (e) {
+                e.preventDefault();
+                var user = document.getElementById("username").value.trim();
+                var pass = document.getElementById("password").value;
+                var errEl = document.getElementById("login-error");
 
-
+                if (user === ADMIN_USER && pass === ADMIN_PASS) {
+                    sessionStorage.setItem("adminAuth", "1");
+                    window.location.href = "admin.html";
+                } else {
+                    errEl.style.display = "block";
+                }
+            });
+        })();
+    </script>
 </body>
 
 </html>
