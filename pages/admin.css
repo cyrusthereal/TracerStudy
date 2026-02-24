@@ -60,3 +60,15 @@ h1 {
 #searchinput option {
   color: black;
 }
+
+#logout-btn {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.4rem 0.8rem;
+  background: #5a5a5a;
+  border-radius: 4px;
+}
+
+#logout-btn:hover {
+  background: #333;
+}

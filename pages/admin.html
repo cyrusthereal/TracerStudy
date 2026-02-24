@@ -14,7 +14,17 @@
             window.location.replace("login.html");
         }
     </script>
-    <h1>Records</h1>
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 900px; margin-bottom: 1rem;">
+        <h1 style="margin: 0;">Records</h1>
+        <a href="#" id="logout-btn">Log out</a>
+    </div>
+    <script>
+        document.getElementById("logout-btn").addEventListener("click", function (e) {
+            e.preventDefault();
+            sessionStorage.removeItem("adminAuth");
+            window.location.replace("login.html");
+        });
+    </script>
     
         
         <div class="input-control">
