@@ -15,9 +15,9 @@ const courseToDept = {
     BSN: 'College of Nursing',
     BSA: 'College of Business & Accountancy',
     BSAIS: 'College of Business & Accountancy',
-    MM: 'College of Business & Accountancy',
-    FM: 'College of Business & Accountancy',
-    M: 'College of Business & Accountancy',
+    BSBA_MM: 'College of Business & Accountancy',
+    BSBA_FM: 'College of Business & Accountancy',
+    BSBA_M: 'College of Business & Accountancy',
     BSHM: 'College of Hospitality, Tourism & Culinary Management',
     BSTOM: 'College of Hospitality, Tourism & Culinary Management',
     BSCM: 'College of Hospitality, Tourism & Culinary Management',
@@ -76,10 +76,14 @@ function renderRows(rows) {
         first = row.fName ?? row.fname ?? first;
         last = row.LName ?? row.lname ?? last;
 
+        const studentNumber = (
+            row.StudentNumber ?? row.studentNumber ?? row.student_no ?? row.studentNo ?? row.Student_No ?? row.StudentNo ?? row.studnum ?? row.studNum ?? row.stud_number ?? ""
+        );
+
         tr.innerHTML = `
             <td>${first}</td>
             <td>${last}</td>
-            <td>${row.StudentNumber ?? row.studentNumber ?? ""}</td>
+            <td>${studentNumber}</td>
             <td>${row.Address ?? row.address ?? ""}</td>
             <td>${row.Birthday ?? row.birthday ?? ""}</td>
             <td>${row.Email ?? row.email ?? ""}</td>
@@ -137,7 +141,10 @@ function populateFilterOptions(rows) {
     const years = new Set();
     rows.forEach(r => {
         const course = (r.Course || r.course || '').toString();
-        const dept = courseToDept[course] || 'Other';
+        const norm = course.toString().trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const deptFromExact = courseToDept[course] || courseToDept[norm];
+        const deptFromSuffix = Object.keys(courseToDept).find(k => norm.endsWith(k));
+        const dept = deptFromExact || (deptFromSuffix ? courseToDept[deptFromSuffix] : null) || 'Other';
         if (!deptMap[dept]) deptMap[dept] = new Set();
         deptMap[dept].add(course);
         if (r.Year_Graduated || r.year_graduated || r.yearGraduated) years.add((r.Year_Graduated || r.year_graduated || r.yearGraduated).toString());
