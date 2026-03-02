@@ -30,11 +30,17 @@
         <div class="input-control">
             <select id="searchinput" required>
                 <option value="" disabled selected>Search by:</option>
-                <option value="course">Course</option>
                 <option value="yrgrad">Year Graduated</option>
+                <option value="dept">Department</option>
             </select>
 
     <br>
+    <div id="search-controls" style="margin-top:0.5rem;">
+        <select id="search-dept" style="display:none; min-width:200px;"></select>
+        <select id="search-year" style="display:none; min-width:120px;"></select>
+        <button id="filter-btn" type="button" style="display:none; margin-left:0.5rem;">Filter</button>
+        <button id="clear-filter-btn" type="button" style="display:none; margin-left:0.25rem;">Clear</button>
+    </div>
 
 
 <div class="datatable">
@@ -42,7 +48,9 @@
     <table id="searchbar">
         <thead>
             <tr>
-                <th> Name </th>
+                <th> First Name </th>
+                <th> Last Name </th>
+                <th> Student Number </th>
                 <th> Address </th>
                 <th> Birthday </th>
                 <th> Email </th>

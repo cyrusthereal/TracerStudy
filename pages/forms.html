@@ -15,10 +15,26 @@
     <div class="container">
         <h1>Forms</h1>
 
-        <label for="fname"> Full Name</label>
+        <label for="fname"> First Name</label>
         <div class="input-control" id="fnameContainer">
             <div class="input" >
                 <input id="fname" name="fname" type="text">
+            </div>
+            <div class="error"></div>
+        </div>
+
+        <label for="lname"> Last Name</label>
+        <div class="input-control" id="lnameContainer">
+            <div class="input" >
+                <input id="lname" name="lname" type="text" required>
+            </div>
+            <div class="error"></div>
+        </div>
+
+        <label for="studentNumber"> Student Number</label>
+        <div class="input-control" id="studentNumberContainer">
+            <div class="input">
+                <input id="studentNumber" name="studentNumber" type="text">
             </div>
             <div class="error"></div>
         </div>
@@ -42,7 +58,7 @@
         <label for="email"> Email</label>
         <div class="input-control" id="emailContainer">
             <div class="input">
-                <input id="email" name="email" type="email">
+                <input id="email" name="email" type="email" required>
             </div>
             <div class="error"></div>
         </div>
@@ -58,35 +74,44 @@
         <label for="Course">Course:</label>
         <div class="input-control">
             <select id="category" class="category">
-                <option value="BEED">BACHELOR OF ELEMENTARY EDUCATION</option>
-                <option value="BSED">BACHELOR OF SECONDARY EDUCATION Major in Values Education, Science, Mathematics and
-                    English</option>
-                <option value="BSNED">BACHELOR OF SPECIAL NEEDS EDUCATION</option>
+                <optgroup label="College of Education">
+                    <option value="BEED">BACHELOR OF ELEMENTARY EDUCATION</option>
+                    <option value="BSED">BACHELOR OF SECONDARY EDUCATION Major in Values Education, Science, Mathematics and
+                        English</option>
+                    <option value="BSNED">BACHELOR OF SPECIAL NEEDS EDUCATION</option>
+                </optgroup>
 
-                <option value="BSN">BACHELOR OF SCIENCE IN NURSING</option>
+                <optgroup label="College of Nursing">
+                    <option value="BSN">BACHELOR OF SCIENCE IN NURSING</option>
+                </optgroup>
 
-                <option value="BSA">BACHELOR OF SCIENCE IN ACCOUNTANCY </option>
-                <option value="BSAIS">BACHELOR OF SCIENCE IN ACCOUNTING INFORMATION SYSTEM </option>
-                <option value="MM">BACHELOR OF SCIENCE IN BUSINESS ADMINISTRATION, Major in Marketing Management
-                </option>
-                <option value="FM">BACHELOR OF SCIENCE IN BUSINESS ADMINISTRATION, Major in Financial Management
-                </option>
+                <optgroup label="College of Business &amp; Accountancy">
+                    <option value="BSA">BACHELOR OF SCIENCE IN ACCOUNTANCY</option>
+                    <option value="BSAIS">BACHELOR OF SCIENCE IN ACCOUNTING INFORMATION SYSTEM</option>
+                    <option value="BSBA-MM">BACHELOR OF SCIENCE IN BUSINESS ADMINISTRATION, Major in Marketing Management</option>
+                    <option value="BSBA-FM">BACHELOR OF SCIENCE IN BUSINESS ADMINISTRATION, Major in Financial Management</option>
+                    <option value="BSBA-M">BACHELOR OF SCIENCE IN BUSINESS ADMINISTRATION, Major in Management</option>
+                </optgroup>
 
-                <option value="M">BACHELOR OF SCIENCE IN BUSINESS ADMINISTRATION, Major in Management </option>
+                <optgroup label="College of Hospitality, Tourism &amp; Culinary Management">
+                    <option value="BSHM">BACHELOR OF SCIENCE IN HOSPITALITY MANAGEMENT</option>
+                    <option value="BSTOM">BACHELOR OF SCIENCE IN TOURISM MANAGEMENT</option>
+                    <option value="BSCM">BACHELOR OF SCIENCE IN CULINARY MANAGEMENT</option>
+                </optgroup>
 
-                <option value="BSHM">BACHELOR OF SCIENCE IN HOPITALITY MANAGEMENT </option>
-                <option value="BSTOM">BACHELOR OF SCIENCE IN TOURISM MANAGEMENT </option>
-                <option value="BSCM">BACHELOR OF SCIENCE IN CULINARY MANAGEMENT
-                </option>
-                <option value="BSIE">BACHELOR OF SCIENCE IN INDUSTRIAL ENGINEERING </option>
-                <option value="BSCPE">BACHELOR OF SCIENCE IN COMPUTER ENGINEERING </option>
-                <option value="BSCS">BACHELOR OF SCIENCE IN COMPUTER SCIENCE </option>
-                <option value="BSIT">BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY </option>
-                <option value="BSECE">BACHELOR OF SCIENCE IN ELECTRONICS ENGINEERING </option>
-                <option value="ETEEAP">Expanded Tertiary Education, Equivalency and Accreditation Program (ETEEAP), BS
-                    Business Administration </option>
-                <option value="CEP">CONTINUING EDUCATION PROGRAM, BS Business Administration </option>
-                <option value="TCP">TEACHER CERTIFICATE PROGRAM</option>
+                <optgroup label="College of Engineering &amp; Information Technology">
+                    <option value="BSIE">BACHELOR OF SCIENCE IN INDUSTRIAL ENGINEERING</option>
+                    <option value="BSCPE">BACHELOR OF SCIENCE IN COMPUTER ENGINEERING</option>
+                    <option value="BSCS">BACHELOR OF SCIENCE IN COMPUTER SCIENCE</option>
+                    <option value="BSIT">BACHELOR OF SCIENCE IN INFORMATION TECHNOLOGY</option>
+                    <option value="BSECE">BACHELOR OF SCIENCE IN ELECTRONICS ENGINEERING</option>
+                </optgroup>
+
+                <optgroup label="Special Programs">
+                    <option value="ETEEAP">Expanded Tertiary Education, Equivalency and Accreditation Program (ETEEAP), BS Business Administration</option>
+                    <option value="CEP">CONTINUING EDUCATION PROGRAM, BS Business Administration</option>
+                    <option value="TCP">TEACHER CERTIFICATE PROGRAM</option>
+                </optgroup>
             </select>
         </div>
 
