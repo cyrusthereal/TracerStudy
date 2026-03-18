@@ -60,36 +60,32 @@ function getAllRecords() {
         });
 }
 
+function formatBirthday(iso) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    if (isNaN(d)) return iso;
+    return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+
 function renderRows(rows) {
     const tbody = document.getElementById("records-tbody");
     tbody.innerHTML = "";
     rows.forEach(row => {
         const tr = document.createElement("tr");
-        const fullName = row.fName || row.fname || row.Name || row.name || "";
-        let first = "";
-        let last = "";
-        if (fullName) {
-            const parts = fullName.trim().split(/\s+/);
-            first = parts[0] || "";
-            last = parts.slice(1).join(" ") || "";
-        }
-        first = row.fName ?? row.fname ?? first;
-        last = row.LName ?? row.lname ?? last;
 
-        const studentNumber = (
-            row.StudentNumber ?? row.studentNumber ?? row.student_no ?? row.studentNo ?? row.Student_No ?? row.StudentNo ?? row.studnum ?? row.studNum ?? row.stud_number ?? ""
-        );
+        const first = row.first_Name ?? "";
+        const last = row.last_Name ?? "";
 
         tr.innerHTML = `
             <td>${first}</td>
             <td>${last}</td>
-            <td>${studentNumber}</td>
-            <td>${row.Address ?? row.address ?? ""}</td>
-            <td>${row.Birthday ?? row.birthday ?? ""}</td>
-            <td>${row.Email ?? row.email ?? ""}</td>
-            <td>${row.Viber ?? row.viber ?? ""}</td>
-            <td>${row.Course ?? row.course ?? ""}</td>
-            <td>${row.Year_Graduated ?? row.year_graduated ?? row.yearGraduated ?? ""}</td>
+            <td>${row.StudentNumber ?? ""}</td>
+            <td>${row.Address ?? ""}</td>
+            <td>${formatBirthday(row.Birthday)}</td>
+            <td>${row.Email ?? ""}</td>
+            <td>${row.Viber ?? ""}</td>
+            <td>${row.Course ?? ""}</td>
+            <td>${row.Year_Graduated ?? ""}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -140,14 +136,14 @@ function populateFilterOptions(rows) {
     const deptMap = {};
     const years = new Set();
     rows.forEach(r => {
-        const course = (r.Course || r.course || '').toString();
-        const norm = course.toString().trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+        const course = (r.Course ?? '').toString();
+        const norm = course.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
         const deptFromExact = courseToDept[course] || courseToDept[norm];
         const deptFromSuffix = Object.keys(courseToDept).find(k => norm.endsWith(k));
         const dept = deptFromExact || (deptFromSuffix ? courseToDept[deptFromSuffix] : null) || 'Other';
         if (!deptMap[dept]) deptMap[dept] = new Set();
         deptMap[dept].add(course);
-        if (r.Year_Graduated || r.year_graduated || r.yearGraduated) years.add((r.Year_Graduated || r.year_graduated || r.yearGraduated).toString());
+        if (r.Year_Graduated != null) years.add(r.Year_Graduated.toString());
     });
     if (deptSelect) {
         deptSelect.innerHTML = '';
@@ -178,12 +174,12 @@ function applyFilter() {
     if (type === 'dept') {
         const course = document.getElementById('search-dept').value;
         if (!course) return alert('Please select a course');
-        const filtered = allRows.filter(r => ((r.Course || r.course || '').toString() === course));
+        const filtered = allRows.filter(r => (r.Course ?? '').toString() === course);
         renderRows(filtered);
     } else if (type === 'yrgrad') {
         const year = document.getElementById('search-year').value;
         if (!year) return alert('Please select a year');
-        const filtered = allRows.filter(r => ((r.Year_Graduated || r.year_graduated || r.yearGraduated) || '').toString() === year);
+        const filtered = allRows.filter(r => (r.Year_Graduated ?? '').toString() === year);
         renderRows(filtered);
     }
 }
