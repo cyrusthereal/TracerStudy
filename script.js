@@ -71,8 +71,8 @@ window.addEventListener("DOMContentLoaded", function () {
 viberInput.addEventListener("keypress", function (e) {
     const char = e.key;
 
-    // Allow numbers and plus sign
-    if (/^[0-9+]$/.test(char)) return;
+    // Allow digits only
+    if (/^[0-9]$/.test(char)) return;
 
     // Block everything else
     e.preventDefault();
@@ -124,6 +124,13 @@ button.addEventListener("click", function () {
 
     if (!isProbablyRealEmail(email)) {
         alert('Please enter a valid, non-disposable email address');
+        return;
+    }
+
+    // enforce Viber is exactly 11 digits
+    const viber = (viberInput.value || "").trim();
+    if (!/^\d{11}$/.test(viber)) {
+        alert("Viber number must be exactly 11 digits");
         return;
     }
 
