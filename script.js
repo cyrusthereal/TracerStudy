@@ -144,6 +144,10 @@ button.addEventListener("click", function () {
 
     let nullFound = false;
     for (const key in data) {
+        // Allow StudentNumber to be left blank (optional field)
+        if (key === "StudentNumber" && (data[key] === null || data[key] === "")) {
+            continue;
+        }
         if (data[key] === null || data[key] === "") {
             // document.querySelector(`.${key}`).textContent = "Please fill in this field";
             alert(`Please fill in ${key}`);
