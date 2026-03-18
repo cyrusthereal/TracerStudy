@@ -130,8 +130,12 @@ button.addEventListener("click", function () {
     const data = {
         // include `Name` for back-end columns that expect a single Name field
         Name: `${nameInput.value} ${nameL.value}`,
+        // send explicit first/last name fields that your backend expects
+        firstName: nameInput.value,
+        lastName: nameL.value,
+        // keep legacy keys for compatibility if needed
         fName: nameInput.value,
-        LName: nameInput.value,
+        LName: nameL.value,
         StudentNumber: studentNumberInput ? studentNumberInput.value : "",
         Birthday: dateInput.value,
         Address: addressInput.value,

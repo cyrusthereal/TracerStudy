@@ -53,7 +53,13 @@ function renderRows(rows) {
     tbody.innerHTML = "";
     rows.forEach(row => {
         const tr = document.createElement("tr");
-        const fullName = row.fName || row.fname || row.Name || row.name || "";
+
+        // support multiple possible name field shapes from the backend
+        const fullName =
+            row.Name || row.name ||
+            `${row.firstName || row.first_name || row.first_Name || ""} ${row.lastName || row.last_name || row.last_Name || ""}`.trim() ||
+            `${row.fName || row.fname || ""} ${row.LName || row.lname || ""}`.trim();
+
         let first = "";
         let last = "";
         if (fullName) {
@@ -61,8 +67,10 @@ function renderRows(rows) {
             first = parts[0] || "";
             last = parts.slice(1).join(" ") || "";
         }
-        first = row.fName ?? row.fname ?? first;
-        last = row.LName ?? row.lname ?? last;
+
+        // prefer explicit first/last fields when present
+        first = row.firstName ?? row.first_name ?? row.first_Name ?? row.fName ?? row.fname ?? first;
+        last = row.lastName ?? row.last_name ?? row.last_Name ?? row.LName ?? row.lname ?? last;
 
         tr.innerHTML = `
             <td>${first}</td>
