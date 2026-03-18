@@ -153,7 +153,7 @@ button.addEventListener("click", function () {
     }
 
     if (!nullFound) {
-        fetch("https://backend-t47d.onrender.com/insert", {
+        fetch("https://backend-1-wsky.onrender.com/insert", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

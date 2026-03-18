@@ -38,7 +38,7 @@ function init() {
 
 function getAllRecords() {
     console.log("Records populated on page load");
-    fetch("https://backend-t47d.onrender.com/select", { method: "GET" })
+    fetch("https://backend-1-wsky.onrender.com/select", { method: "GET" })
         .then(res => {
             if (!res.ok) throw new Error("Request failed: " + res.status);
             return res.json();
