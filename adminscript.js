@@ -43,6 +43,18 @@ const COURSE_DEPT_MAP = {
 
 let allRows = [];
 
+// Format ISO datetime or date-like values to "YYYY-MM-DD" for display
+function formatBirthday(value) {
+    if (!value) return "";
+    try {
+        const d = new Date(value);
+        if (isNaN(d)) return value;
+        return d.toISOString().split("T")[0];
+    } catch {
+        return value;
+    }
+}
+
 function init() {
     setupFilterControls();
     getAllRecords();
@@ -77,7 +89,7 @@ function renderRows(rows) {
             <td>${last}</td>
             <td>${row.StudentNumber ?? row.studentNumber ?? ""}</td>
             <td>${row.Address ?? row.address ?? ""}</td>
-            <td>${row.Birthday ?? row.birthday ?? ""}</td>
+            <td>${formatBirthday(row.Birthday ?? row.birthday ?? "")}</td>
             <td>${row.Email ?? row.email ?? ""}</td>
             <td>${row.Viber ?? row.viber ?? ""}</td>
             <td>${row.Course ?? row.course ?? ""}</td>
