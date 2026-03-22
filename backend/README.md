@@ -53,9 +53,16 @@ For local testing with the default in the repo:
 
 ## Deploy on Render
 
-1. New **Web Service**, root directory `backend`, build `npm install`, start `npm start`.
-2. Set env vars (especially `JWT_SECRET`, `UPSTREAM_INSERT_URL`, `RESEND_API_KEY`, `RESEND_FROM`, `CORS_ORIGIN`).
-3. Update `TRACER_API_BASE` in your hosted `forms.html` to the Render URL.
+1. **Option A — Blueprint:** Connect the repo and use [`render.yaml`](../render.yaml) (set `UPSTREAM_INSERT_URL` in the dashboard if not prompted).
+2. **Option B — Manual:** New **Web Service**, root directory `backend`, build `npm install`, start `npm start`.
+3. Set env vars: `JWT_SECRET`, **`UPSTREAM_INSERT_URL`**, `RESEND_API_KEY`, `RESEND_FROM`, `CORS_ORIGIN`.
+4. In hosted `forms.html`, set `window.TRACER_API_BASE` to this service’s URL (**origin only**, no `/insert`).
+
+### One domain vs two services
+
+- **`TRACER_API_BASE` in `forms.html`** must be the **origin only**: `https://your-api.onrender.com` (no `/insert`).
+- If this OTP app and your **legacy** insert are on **different** Render services, set `UPSTREAM_INSERT_URL` to the **legacy** `https://.../insert` URL.
+- If you deploy **only** this `backend/` code onto `https://backend-1-wsky.onrender.com`, you **cannot** set `UPSTREAM_INSERT_URL` to that same `/insert` or the server will call itself in a loop. You need either a **second** service that only does insert, or merge your database insert logic into this repo.
 
 ## Security notes
 

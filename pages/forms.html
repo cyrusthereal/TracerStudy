@@ -154,11 +154,11 @@
             </div>
         </div>
 
-        <!-- OTP API: backend with /request-otp, /verify-otp, /insert (see backend/README.md) -->
+        <!-- OTP API base URL only (no /insert). script.js adds /request-otp, /verify-otp, /insert -->
         <script>
-            // Local: run `npm start` in folder backend/ (default port 3000).
-            // Live site: replace with your deployed URL only, e.g. https://your-service.onrender.com
-            window.TRACER_API_BASE = "https://backend-1-wsky.onrender.com/insert";
+            // Local: http://localhost:3000 | Live: your Render Web Service URL (same app as backend/)
+            window.TRACER_API_BASE = "https://backend-1-wsky.onrender.com";
+            // Optional: if home page is not ../index.html from this file, set e.g. window.TRACER_INDEX_URL = "/index.html";
         </script>
         <script src="../address-psgc.js"></script>
         <script src="../script.js"></script>

@@ -198,4 +198,13 @@ const PORT = Number(process.env.PORT) || 3000;
 app.listen(PORT, () => {
     console.log("Tracer Study API listening on port", PORT);
     console.log("Upstream insert:", UPSTREAM_INSERT_URL);
+    const selfUrl = process.env.RENDER_EXTERNAL_URL || "";
+    if (
+        selfUrl &&
+        UPSTREAM_INSERT_URL.replace(/\/$/, "").startsWith(selfUrl.replace(/\/$/, ""))
+    ) {
+        console.warn(
+            "[config] UPSTREAM_INSERT_URL points at this same host — proxy loop risk. Use a separate insert-only service URL, or merge DB insert into this app."
+        );
+    }
 });

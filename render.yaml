@@ -1,0 +1,19 @@
+# Render Blueprint: deploy the OTP + insert-proxy API
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: tracer-study-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGIN
+        value: "*"
+      # Required: full URL of your existing POST /insert (must NOT be this same service’s /insert or you get a loop).
+      - key: UPSTREAM_INSERT_URL
+        sync: false

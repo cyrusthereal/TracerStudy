@@ -1,7 +1,19 @@
 // API with OTP + insert proxy (see backend/). Override in forms.html via window.TRACER_API_BASE
+function normalizeTracerApiBase(raw) {
+    let u = String(raw || "").trim().replace(/\/+$/, "");
+    // Common mistake: pasting .../insert — paths are added in code as /request-otp, /insert, etc.
+    if (/\/insert$/i.test(u)) u = u.replace(/\/insert$/i, "");
+    return u;
+}
 const API_BASE = (typeof window !== "undefined" && window.TRACER_API_BASE)
-    ? String(window.TRACER_API_BASE).replace(/\/$/, "")
+    ? normalizeTracerApiBase(window.TRACER_API_BASE)
     : "http://localhost:3000";
+
+// After successful submit + OTP + insert (override if your index is not ../index.html)
+const INDEX_URL =
+    typeof window !== "undefined" && window.TRACER_INDEX_URL
+        ? String(window.TRACER_INDEX_URL)
+        : "../index.html";
 
 const button = document.getElementById("submit-btn");
 const nameInput = document.getElementById("fname");
@@ -258,8 +270,7 @@ if (otpVerifyBtn) {
                 return;
             }
             closeOtpModal();
-            alert("Successfully inserted!");
-            window.location.href = "../index.html";
+            window.location.replace(INDEX_URL);
         } catch (e) {
             setOtpStatus(e.message || "Verification failed.");
         } finally {
