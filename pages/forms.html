@@ -39,12 +39,24 @@
             <div class="error"></div>
         </div>
 
-        <label for="address"> Address</label>
+        <label>Address (Philippines)</label>
         <div class="input-control" id="addressContainer">
-            <div class="input">
-                <input id="address" name="address" type="text">
+            <div class="input address-cascade">
+                <select id="addr-region" aria-label="Region">
+                    <option value="">Select region</option>
+                </select>
+                <select id="addr-province" aria-label="Province" disabled>
+                    <option value="">Select province</option>
+                </select>
+                <select id="addr-city" aria-label="City or municipality" disabled>
+                    <option value="">Select city / municipality</option>
+                </select>
+                <select id="addr-barangay" aria-label="Barangay" disabled>
+                    <option value="">Select barangay</option>
+                </select>
+                <input type="text" id="addr-street" name="addr-street" placeholder="Street, house no., building (optional)">
             </div>
-            <div class="error"></div>
+            <div class="error" id="addr-error"></div>
         </div>
 
         <label for="Birthday"> Birthday </label>
@@ -126,8 +138,31 @@
         </div>
         <button type="submit" id="submit-btn"> Submit </button>
 
+        <!-- Email OTP modal (shown after form validates) -->
+        <div id="otp-modal-overlay" class="otp-modal-overlay" aria-hidden="true" hidden></div>
+        <div id="otp-modal" class="otp-modal" role="dialog" aria-labelledby="otp-modal-title" aria-modal="true" hidden>
+            <h2 id="otp-modal-title">Verify your email</h2>
+            <p id="otp-modal-text" class="otp-modal-text">We sent a 6-digit code to your email.</p>
+            <div class="otp-input-wrap">
+                <input type="text" id="otp-input" inputmode="numeric" maxlength="6" pattern="\d{6}" autocomplete="one-time-code" placeholder="000000" aria-label="Verification code">
+            </div>
+            <p id="otp-modal-status" class="otp-modal-status" role="status"></p>
+            <div class="otp-modal-actions">
+                <button type="button" id="otp-verify-btn">Verify</button>
+                <button type="button" id="otp-resend-btn">Resend code</button>
+                <button type="button" id="otp-cancel-btn" class="otp-btn-secondary">Cancel</button>
+            </div>
+        </div>
 
+        <!-- OTP API: backend with /request-otp, /verify-otp, /insert (see backend/README.md) -->
+        <script>
+            // Local: run `npm start` in folder backend/ (default port 3000).
+            // Live site: replace with your deployed URL only, e.g. https://your-service.onrender.com
+            window.TRACER_API_BASE = "http://localhost:3000";
+        </script>
+        <script src="../address-psgc.js"></script>
         <script src="../script.js"></script>
 </body>
+
 
 </html>

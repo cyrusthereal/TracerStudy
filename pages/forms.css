@@ -56,3 +56,128 @@ input:focus {
   border: 2px solid #A30000;
   transition: border 0.09s ease;
 }
+
+.address-cascade {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px;
+}
+
+.address-cascade select {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    font-family: inherit;
+}
+
+.address-cascade select:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.address-cascade #addr-street {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    margin-top: 4px;
+}
+
+#addr-error {
+    color: #A30000;
+    font-size: 0.85rem;
+    min-height: 1.2em;
+}
+
+/* OTP modal */
+.otp-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.otp-modal-overlay[hidden],
+.otp-modal[hidden] {
+    display: none !important;
+}
+
+.otp-modal {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    max-width: 90vw;
+    width: 360px;
+}
+
+.otp-modal h2 {
+    margin: 0 0 12px;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.otp-modal-text {
+    margin: 0 0 16px;
+    font-size: 0.95rem;
+    color: #555;
+}
+
+.otp-input-wrap {
+    margin-bottom: 12px;
+}
+
+.otp-input-wrap input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.25rem;
+    letter-spacing: 0.3em;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.otp-modal-status {
+    min-height: 1.25em;
+    font-size: 0.85rem;
+    color: #A30000;
+    margin: 0 0 12px;
+}
+
+.otp-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.otp-modal-actions button {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 4px;
+    background: #A30000;
+    color: #fff;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.otp-modal-actions button:hover {
+    filter: brightness(1.05);
+}
+
+.otp-modal-actions .otp-btn-secondary {
+    background: #666;
+    flex-basis: 100%;
+}
+
+#otp-resend-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
