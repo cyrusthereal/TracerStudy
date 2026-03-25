@@ -100,25 +100,19 @@ function renderRows(rows) {
 }
 
 function getAllRecords() {
-    console.log("Records populated on page load");
-    fetch("https://backend-t47d.onrender.com/select", { method: "GET" })
-        .then(res => {
-            if (!res.ok) throw new Error("Request failed: " + res.status);
-            return res.json();
-        })
-        .then(data => {
-            console.log("data:", data);
-            if (data && data.error) {
-                alert(data.error);
-                return;
-            }
-            const rows = Array.isArray(data) ? data : [];
+    console.log("Records populated on page load (Firestore)");
+    window.firebaseDb
+        .collection('tracer-study-submissions')
+        .orderBy('submittedAt', 'desc')
+        .get()
+        .then(snapshot => {
+            const rows = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             allRows = rows;
             renderRows(allRows);
             populateFilterOptions(allRows);
         })
         .catch(err => {
-            console.error("getAll error:", err);
+            console.error("getAll Firestore error:", err);
             alert("Failed to fetch records: " + err.message);
         });
 }
@@ -141,10 +135,20 @@ function setupFilterControls() {
 
         if (v === 'dept') {
             if (deptSelect) deptSelect.style.display = '';
+            if (yearSelect) yearSelect.style.display = 'none';
+            if (document.getElementById('search-address')) document.getElementById('search-address').style.display = 'none';
             if (filterBtn) filterBtn.style.display = '';
             if (clearBtn) clearBtn.style.display = '';
         } else if (v === 'yrgrad') {
+            if (deptSelect) deptSelect.style.display = 'none';
             if (yearSelect) yearSelect.style.display = '';
+            if (document.getElementById('search-address')) document.getElementById('search-address').style.display = 'none';
+            if (filterBtn) filterBtn.style.display = '';
+            if (clearBtn) clearBtn.style.display = '';
+        } else if (v === 'address') {
+            if (deptSelect) deptSelect.style.display = 'none';
+            if (yearSelect) yearSelect.style.display = 'none';
+            if (document.getElementById('search-address')) document.getElementById('search-address').style.display = '';
             if (filterBtn) filterBtn.style.display = '';
             if (clearBtn) clearBtn.style.display = '';
         }
@@ -237,6 +241,16 @@ function applyFilter() {
         const year = document.getElementById('search-year').value;
         if (!year) return alert('Please select a year');
         const filtered = allRows.filter(r => ((r.Year_Graduated || r.year_graduated || r.yearGraduated) || '').toString() === year);
+        renderRows(filtered);
+    } else if (type === 'address') {
+        const addressInput = document.getElementById('search-address');
+        if (!addressInput) return alert('Address input not found');
+        const keyword = (addressInput.value || '').trim().toLowerCase();
+        if (!keyword) return alert('Please enter an address keyword');
+        const filtered = allRows.filter(r => {
+            const address = (r.Address || r.address || '').toString().toLowerCase();
+            return address.includes(keyword);
+        });
         renderRows(filtered);
     }
 }

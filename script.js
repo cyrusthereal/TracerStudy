@@ -1,15 +1,7 @@
-// API with OTP + insert proxy (see backend/). Override in forms.html via window.TRACER_API_BASE
-function normalizeTracerApiBase(raw) {
-    let u = String(raw || "").trim().replace(/\/+$/, "");
-    // Common mistake: pasting .../insert — paths are added in code as /request-otp, /insert, etc.
-    if (/\/insert$/i.test(u)) u = u.replace(/\/insert$/i, "");
-    return u;
-}
-const API_BASE = (typeof window !== "undefined" && window.TRACER_API_BASE)
-    ? normalizeTracerApiBase(window.TRACER_API_BASE)
-    : "http://localhost:3000";
+// Firebase-based authentication and data submission
+// No more custom API calls - everything handled by Firebase
 
-// After successful submit + OTP + insert (override if your index is not ../index.html)
+// After successful submit + auth + firestore write
 const INDEX_URL =
     typeof window !== "undefined" && window.TRACER_INDEX_URL
         ? String(window.TRACER_INDEX_URL)
@@ -27,17 +19,32 @@ const yearGraduatedInput = document.getElementById("yearGraduated");
 
 /** @type {Record<string, unknown> | null} */
 let pendingFormPayload = null;
-let resendCooldownTimer = null;
-let resendCooldownSec = 0;
 
-const otpOverlay = document.getElementById("otp-modal-overlay");
-const otpModal = document.getElementById("otp-modal");
-const otpInput = document.getElementById("otp-input");
-const otpVerifyBtn = document.getElementById("otp-verify-btn");
-const otpResendBtn = document.getElementById("otp-resend-btn");
-const otpCancelBtn = document.getElementById("otp-cancel-btn");
-const otpStatus = document.getElementById("otp-modal-status");
-const otpModalText = document.getElementById("otp-modal-text");
+// Remove OTP modal elements - we'll use a simple loading message instead
+const loadingOverlay = document.createElement("div");
+loadingOverlay.id = "loading-overlay";
+loadingOverlay.innerHTML = `
+    <div id="loading-modal">
+        <p id="loading-text">Sending verification email...</p>
+    </div>
+`;
+loadingOverlay.style.cssText = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: none; justify-content: center;
+    align-items: center; z-index: 1000;
+`;
+document.body.appendChild(loadingOverlay);
+
+const loadingText = document.getElementById("loading-text");
+
+function showLoading(message) {
+    loadingText.textContent = message;
+    loadingOverlay.style.display = "flex";
+}
+
+function hideLoading() {
+    loadingOverlay.style.display = "none";
+}
 
 function maskEmail(addr) {
     const a = (addr || "").trim();
@@ -49,102 +56,84 @@ function maskEmail(addr) {
     return u + "@" + domain;
 }
 
-function setOtpModalVisible(show) {
-    if (!otpOverlay || !otpModal) return;
-    if (show) {
-        otpOverlay.hidden = false;
-        otpModal.hidden = false;
-        otpOverlay.setAttribute("aria-hidden", "false");
-        otpInput && otpInput.focus();
-    } else {
-        otpOverlay.hidden = true;
-        otpModal.hidden = true;
-        otpOverlay.setAttribute("aria-hidden", "true");
+// Firebase authentication functions
+async function sendVerificationEmail(email) {
+    const actionCodeSettings = {
+        url: window.location.href, // Redirect back to this page
+        handleCodeInApp: true,
+    };
+
+    try {
+        await window.sendSignInLinkToEmail(null, email, actionCodeSettings);
+        // Save email to localStorage for sign-in completion
+        window.localStorage.setItem('emailForSignIn', email);
+        return true;
+    } catch (error) {
+        console.error('Error sending verification email:', error);
+        throw new Error('Failed to send verification email: ' + error.message);
     }
 }
 
-function setOtpStatus(msg) {
-    if (otpStatus) otpStatus.textContent = msg || "";
-}
-
-function updateResendButton() {
-    if (!otpResendBtn) return;
-    if (resendCooldownSec > 0) {
-        otpResendBtn.disabled = true;
-        otpResendBtn.textContent = "Resend code (" + resendCooldownSec + "s)";
-    } else {
-        otpResendBtn.disabled = false;
-        otpResendBtn.textContent = "Resend code";
+async function submitToFirestore(formData) {
+    try {
+        const collectionRef = window.firebaseCollection(null, 'tracer-study-submissions');
+        const docRef = await window.firebaseAddDoc(collectionRef, {
+            ...formData,
+            submittedAt: new Date(),
+            verified: true
+        });
+        console.log('Document written with ID: ', docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error('Error adding document: ', error);
+        throw new Error('Failed to save data: ' + error.message);
     }
 }
 
-function startResendCooldown(seconds) {
-    resendCooldownSec = seconds;
-    updateResendButton();
-    if (resendCooldownTimer) clearInterval(resendCooldownTimer);
-    resendCooldownTimer = setInterval(function () {
-        resendCooldownSec--;
-        updateResendButton();
-        if (resendCooldownSec <= 0) {
-            clearInterval(resendCooldownTimer);
-            resendCooldownTimer = null;
-            resendCooldownSec = 0;
-            updateResendButton();
+// Check if returning from email link
+async function handleEmailLinkSignIn() {
+    if (window.isSignInWithEmailLink(null, window.location.href)) {
+        let email = window.localStorage.getItem('emailForSignIn');
+        if (!email) {
+            email = window.prompt('Please provide your email for confirmation');
         }
-    }, 1000);
-}
 
-async function postJson(path, body) {
-    const res = await fetch(API_BASE + path, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-    });
-    let data;
-    const text = await res.text();
-    try {
-        data = text ? JSON.parse(text) : {};
-    } catch {
-        data = { error: text || "Invalid response" };
-    }
-    if (!res.ok) {
-        const err = data.error || data.message || ("HTTP " + res.status);
-        throw new Error(typeof err === "string" ? err : JSON.stringify(err));
-    }
-    return data;
-}
+        try {
+            // restore pending payload from localStorage when returning via email link
+            if (!pendingFormPayload) {
+                const saved = window.localStorage.getItem('pendingFormPayload');
+                if (saved) {
+                    try {
+                        pendingFormPayload = JSON.parse(saved);
+                    } catch (err) {
+                        console.warn('Could not parse pending form payload', err);
+                    }
+                }
+            }
 
-async function sendRequestOtp(email) {
-    return postJson("/request-otp", { email: email });
-}
+            showLoading('Verifying email and saving data...');
+            const result = await window.signInWithEmailLink(null, email, window.location.href);
+            console.log('Successfully signed in:', result.user);
 
-function closeOtpModal() {
-    setOtpModalVisible(false);
-    pendingFormPayload = null;
-    if (otpInput) otpInput.value = "";
-    setOtpStatus("");
-    if (resendCooldownTimer) {
-        clearInterval(resendCooldownTimer);
-        resendCooldownTimer = null;
-    }
-    resendCooldownSec = 0;
-    updateResendButton();
-}
+            // Clear email from storage
+            window.localStorage.removeItem('emailForSignIn');
 
-async function openOtpAndRequestCode(email) {
-    if (otpModalText) {
-        otpModalText.textContent = "We sent a 6-digit code to " + maskEmail(email) + ".";
-    }
-    setOtpStatus("Sending code…");
-    if (otpVerifyBtn) otpVerifyBtn.disabled = true;
-    try {
-        await sendRequestOtp(email);
-        setOtpStatus("Enter the code below.");
-        startResendCooldown(60);
-    } catch (e) {
-        setOtpStatus(e.message || "Could not send code.");
-    } finally {
-        if (otpVerifyBtn) otpVerifyBtn.disabled = false;
+            // Submit the pending form data
+            if (pendingFormPayload) {
+                await submitToFirestore(pendingFormPayload);
+                window.localStorage.removeItem('pendingFormPayload');
+                hideLoading();
+                alert('Form submitted successfully!');
+                window.location.replace(INDEX_URL);
+            } else {
+                hideLoading();
+                alert('Verification successful, but no form data found. Please try submitting again.');
+            }
+        } catch (error) {
+            hideLoading();
+            console.error('Error signing in with email link:', error);
+            alert('Verification failed: ' + error.message);
+        }
     }
 }
 
@@ -200,84 +189,10 @@ window.addEventListener("DOMContentLoaded", function () {
     } catch (e) {
         console.error("Failed to populate yearGraduated", e);
     }
+
+    // Check if user is returning from email verification
+    handleEmailLinkSignIn();
 });
-
-if (otpInput) {
-    otpInput.addEventListener("input", function () {
-        this.value = this.value.replace(/\D/g, "").slice(0, 6);
-    });
-}
-
-if (otpCancelBtn) {
-    otpCancelBtn.addEventListener("click", function () {
-        closeOtpModal();
-    });
-}
-
-if (otpResendBtn) {
-    otpResendBtn.addEventListener("click", async function () {
-        if (!pendingFormPayload || resendCooldownSec > 0) return;
-        const email = String(pendingFormPayload.Email || "").trim();
-        setOtpStatus("Sending code…");
-        try {
-            await sendRequestOtp(email);
-            setOtpStatus("New code sent.");
-            startResendCooldown(60);
-        } catch (e) {
-            setOtpStatus(e.message || "Could not resend.");
-        }
-    });
-}
-
-if (otpVerifyBtn) {
-    otpVerifyBtn.addEventListener("click", async function () {
-        if (!pendingFormPayload) return;
-        const email = String(pendingFormPayload.Email || "").trim();
-        const code = (otpInput && otpInput.value) ? otpInput.value.replace(/\D/g, "") : "";
-        if (code.length !== 6) {
-            setOtpStatus("Enter the 6-digit code.");
-            return;
-        }
-        setOtpStatus("Verifying…");
-        otpVerifyBtn.disabled = true;
-        try {
-            const out = await postJson("/verify-otp", { email: email, code: code });
-            const token = out.emailVerificationToken || out.token;
-            if (!token) throw new Error("No verification token returned");
-
-            const insertBody = Object.assign({}, pendingFormPayload, { emailVerificationToken: token });
-            const insertRes = await fetch(API_BASE + "/insert", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(insertBody),
-            });
-            const insertText = await insertRes.text();
-            let insertData;
-            try {
-                insertData = insertText ? JSON.parse(insertText) : {};
-            } catch {
-                insertData = { error: insertText };
-            }
-            if (!insertRes.ok) {
-                const err = insertData.error || insertData.message || ("HTTP " + insertRes.status);
-                throw new Error(typeof err === "string" ? err : JSON.stringify(err));
-            }
-            if (insertData.error) {
-                const msg = typeof insertData.error === "string"
-                    ? insertData.error.split("for")[0].trim()
-                    : insertData.error;
-                alert(msg);
-                return;
-            }
-            closeOtpModal();
-            window.location.replace(INDEX_URL);
-        } catch (e) {
-            setOtpStatus(e.message || "Verification failed.");
-        } finally {
-            otpVerifyBtn.disabled = false;
-        }
-    });
-}
 
 viberInput.addEventListener("keypress", function (e) {
     const char = e.key;
@@ -291,7 +206,7 @@ studentNumberInput.addEventListener("keypress", function (e) {
     e.preventDefault();
 });
 
-button.addEventListener("click", function () {
+button.addEventListener("click", async function () {
     if (!nameL.value || nameL.value.trim() === "") {
         alert("Please fill in Last Name");
         return;
@@ -371,8 +286,17 @@ button.addEventListener("click", function () {
 
     if (nullFound) return;
 
+    // Store form data for later submission after email verification
     pendingFormPayload = data;
-    if (otpInput) otpInput.value = "";
-    setOtpModalVisible(true);
-    openOtpAndRequestCode(email);
+    window.localStorage.setItem('pendingFormPayload', JSON.stringify(data));
+
+    try {
+        showLoading(`Sending verification email to ${maskEmail(email)}...`);
+        await sendVerificationEmail(email);
+        hideLoading();
+        alert(`Verification email sent to ${maskEmail(email)}. Please check your email and click the link to complete submission.`);
+    } catch (error) {
+        hideLoading();
+        alert('Failed to send verification email: ' + error.message);
+    }
 });

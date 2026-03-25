@@ -1,18 +1,53 @@
-# Tracer Study (frontend + OTP API)
+# Tracer Study (Firebase Authentication + Firestore)
 
-## Forms (Philippines address + email OTP)
+## Forms (Philippines address + Firebase email verification)
 
 - **Address:** Cascading region → province → city/municipality → barangay via [PSGC API](https://psgc.gitlab.io/api), plus optional street line. See [`address-psgc.js`](address-psgc.js) and [`pages/forms.html`](pages/forms.html).
-- **Email OTP:** Submit opens a modal; the app calls your API for `request-otp` → `verify-otp` → `insert`. Configure the API URL in [`pages/forms.html`](pages/forms.html) as `window.TRACER_API_BASE`.
+- **Email Verification:** Firebase handles email link authentication and data storage in Firestore.
 
-## Backend (Render / local)
+## Setup Instructions
 
-The OTP gateway and secured insert proxy live in [`backend/`](backend/README.md).
+### 1. Create Firebase Project
+1. Go to [Firebase Console](https://console.firebase.google.com)
+2. Create a new project (e.g., "tracer-study-app")
+3. Enable Authentication:
+   - Go to Authentication > Sign-in method
+   - Enable "Email/Password" (includes email link authentication)
+4. Set up Firestore:
+   - Go to Firestore Database > Create database
+   - Choose "Start in test mode" for development
+5. Get your Firebase config from Project settings > General > Your apps > Add app (Web)
 
-1. Deploy the `backend` folder (e.g. Render: root `backend`, start `npm start`).
-2. Set env vars: `JWT_SECRET`, `UPSTREAM_INSERT_URL`, `RESEND_API_KEY`, `RESEND_FROM`, `CORS_ORIGIN` (see [`backend/.env.example`](backend/.env.example)).
-3. Point `window.TRACER_API_BASE` in `pages/forms.html` to your deployed API URL (not the old insert URL directly).
+### 2. Configure the App
+1. In `pages/forms.html`, replace the `firebaseConfig` object with your actual Firebase config
+2. Deploy or serve the static files
+3. Add your domain to Firebase Authentication > Settings > Authorized domains
 
-**CORS:** Set `CORS_ORIGIN` to your static site origin(s), comma-separated, or `*` for testing only.
+### 3. Firestore Security Rules (Production)
+Update Firestore rules to allow authenticated writes:
 
-**Email:** Without `RESEND_API_KEY`, OTP codes are printed in the server log (local dev only).
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /tracer-study-submissions/{document} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+## How It Works
+1. User fills form and submits
+2. Firebase sends verification email with sign-in link
+3. User clicks link, gets redirected back to form page
+4. Firebase verifies the link and authenticates user
+5. Form data is saved to Firestore
+6. User is redirected to success page
+
+## Benefits of Firebase
+- ✅ No custom backend server needed
+- ✅ Built-in email delivery
+- ✅ Secure authentication
+- ✅ Scalable database
+- ✅ Real-time capabilities

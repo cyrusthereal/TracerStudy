@@ -138,28 +138,48 @@
         </div>
         <button type="submit" id="submit-btn"> Submit </button>
 
-        <!-- Email OTP modal (shown after form validates) -->
-        <div id="otp-modal-overlay" class="otp-modal-overlay" aria-hidden="true" hidden></div>
-        <div id="otp-modal" class="otp-modal" role="dialog" aria-labelledby="otp-modal-title" aria-modal="true" hidden>
-            <h2 id="otp-modal-title">Verify your email</h2>
-            <p id="otp-modal-text" class="otp-modal-text">We sent a 6-digit code to your email.</p>
-            <div class="otp-input-wrap">
-                <input type="text" id="otp-input" inputmode="numeric" maxlength="6" pattern="\d{6}" autocomplete="one-time-code" placeholder="000000" aria-label="Verification code">
-            </div>
-            <p id="otp-modal-status" class="otp-modal-status" role="status"></p>
-            <div class="otp-modal-actions">
-                <button type="button" id="otp-verify-btn">Verify</button>
-                <button type="button" id="otp-resend-btn">Resend code</button>
-                <button type="button" id="otp-cancel-btn" class="otp-btn-secondary">Cancel</button>
-            </div>
-        </div>
+        <!-- Firebase SDK -->
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics-compat.js"></script>
 
-        <!-- OTP API base URL only (no /insert). script.js adds /request-otp, /verify-otp, /insert -->
         <script>
-            // Local: http://localhost:3000 | Live: your Render Web Service URL (same app as backend/)
-            window.TRACER_API_BASE = "https://backend-1-wsky.onrender.com";
-            // Optional: if home page is not ../index.html from this file, set e.g. window.TRACER_INDEX_URL = "/index.html";
+            // Firebase configuration - REPLACE WITH YOUR ACTUAL CONFIG FROM FIREBASE CONSOLE
+            const firebaseConfig = {
+                apiKey: "AIzaSyDA6ZRAbZVcew3r_FSRv-SPXghzTMm8nnA",
+                authDomain: "ceit-tracer.firebaseapp.com",
+                projectId: "ceit-tracer",
+                storageBucket: "ceit-tracer.firebasestorage.app",
+                messagingSenderId: "908782660357",
+                appId: "1:908782660357:web:bf844a70a5d35d4946656c",
+                measurementId: "G-MEE32V48FD"
+            };
+
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+
+            // Make Firebase functions globally available
+            window.firebaseAuth = firebase.auth();
+            window.firebaseDb = firebase.firestore();
+
+            window.sendSignInLinkToEmail = (auth, email, settings) => {
+                return firebase.auth().sendSignInLinkToEmail(email, settings);
+            };
+            window.isSignInWithEmailLink = (auth, url) => {
+                return firebase.auth().isSignInWithEmailLink(url);
+            };
+            window.signInWithEmailLink = (auth, email, url) => {
+                return firebase.auth().signInWithEmailLink(email, url);
+            };
+            window.firebaseCollection = (db, name) => {
+                return firebase.firestore().collection(name);
+            };
+            window.firebaseAddDoc = (collectionRef, data) => {
+                return collectionRef.add(data);
+            };
         </script>
+
         <script src="../address-psgc.js"></script>
         <script src="../script.js"></script>
 </body>

@@ -32,12 +32,14 @@
                 <option value="" disabled selected>Search by:</option>
                 <option value="yrgrad">Year Graduated</option>
                 <option value="dept">Department</option>
+                <option value="address">Address</option>
             </select>
 
     <br>
     <div id="search-controls" style="margin-top:0.5rem;">
         <select id="search-dept" style="display:none; min-width:200px;"></select>
         <select id="search-year" style="display:none; min-width:120px;"></select>
+        <input id="search-address" type="text" style="display:none; min-width:240px;" placeholder="Enter address keyword" />
         <button id="filter-btn" type="button" style="display:none; margin-left:0.5rem;">Filter</button>
         <button id="clear-filter-btn" type="button" style="display:none; margin-left:0.25rem;">Clear</button>
     </div>
@@ -64,7 +66,23 @@
     </table>
     </div>
     </div>
-        
+
+    <!-- Firebase client libs for admin data read -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDA6ZRAbZVcew3r_FSRv-SPXghzTMm8nnA",
+            authDomain: "ceit-tracer.firebaseapp.com",
+            projectId: "ceit-tracer",
+            storageBucket: "ceit-tracer.firebasestorage.app",
+            messagingSenderId: "908782660357",
+            appId: "1:908782660357:web:bf844a70a5d35d4946656c"
+        };
+        firebase.initializeApp(firebaseConfig);
+        window.firebaseDb = firebase.firestore();
+    </script>
+
     <script src="../adminscript.js"></script>
 </body>
 
