@@ -1,0 +1,256 @@
+// Single, cleaned-up admin script with department-aware filtering
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+} else {
+    init();
+}
+
+// Map course codes to departments (no "Others")
+const COURSE_DEPT_MAP = {
+    // College of Education
+    BEED: "College of Education",
+    BSED: "College of Education",
+    BSNED: "College of Education",
+
+    // College of Nursing
+    BSN: "College of Nursing",
+
+    // College of Business & Accountancy
+    BSA: "College of Business & Accountancy",
+    BSAIS: "College of Business & Accountancy",
+    BSBA_MM: "College of Business & Accountancy",
+    "BSBA-FM": "College of Business & Accountancy",
+    "BSBA-M": "College of Business & Accountancy",
+
+    // College of Hospitality, Tourism & Culinary Management
+    BSHM: "College of Hospitality, Tourism & Culinary Management",
+    BSTOM: "College of Hospitality, Tourism & Culinary Management",
+    BSCM: "College of Hospitality, Tourism & Culinary Management",
+
+    // College of Engineering & Information Technology
+    BSIE: "College of Engineering & Information Technology",
+    BSCPE: "College of Engineering & Information Technology",
+    BSCS: "College of Engineering & Information Technology",
+    BSIT: "College of Engineering & Information Technology",
+    BSECE: "College of Engineering & Information Technology",
+
+    // Special Programs
+    ETEEAP: "Special Programs",
+    CEP: "Special Programs",
+    TCP: "Special Programs",
+};
+
+let allRows = [];
+
+// Format ISO datetime or date-like values to "YYYY-MM-DD" for display
+function formatBirthday(value) {
+    if (!value) return "";
+    try {
+        const d = new Date(value);
+        if (isNaN(d)) return value;
+        return d.toISOString().split("T")[0];
+    } catch {
+        return value;
+    }
+}
+
+function init() {
+    setupFilterControls();
+    getAllRecords();
+}
+
+function renderRows(rows) {
+    const tbody = document.getElementById("records-tbody");
+    tbody.innerHTML = "";
+    rows.forEach(row => {
+        const tr = document.createElement("tr");
+
+        // support multiple possible name field shapes from the backend
+        const fullName =
+            row.Name || row.name ||
+            `${row.firstName || row.first_name || row.first_Name || ""} ${row.lastName || row.last_name || row.last_Name || ""}`.trim() ||
+            `${row.fName || row.fname || ""} ${row.LName || row.lname || ""}`.trim();
+
+        let first = "";
+        let last = "";
+        if (fullName) {
+            const parts = fullName.trim().split(/\s+/);
+            first = parts[0] || "";
+            last = parts.slice(1).join(" ") || "";
+        }
+
+        // prefer explicit first/last fields when present
+        first = row.firstName ?? row.first_name ?? row.first_Name ?? row.fName ?? row.fname ?? first;
+        last = row.lastName ?? row.last_name ?? row.last_Name ?? row.LName ?? row.lname ?? last;
+
+        tr.innerHTML = `
+            <td>${first}</td>
+            <td>${last}</td>
+            <td>${row.StudentNumber ?? row.studentNumber ?? ""}</td>
+            <td>${row.Address ?? row.address ?? ""}</td>
+            <td>${formatBirthday(row.Birthday ?? row.birthday ?? "")}</td>
+            <td>${row.Email ?? row.email ?? ""}</td>
+            <td>${row.Viber ?? row.viber ?? ""}</td>
+            <td>${row.Course ?? row.course ?? ""}</td>
+            <td>${row.Year_Graduated ?? row.year_graduated ?? row.yearGraduated ?? ""}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function getAllRecords() {
+    console.log("Records populated on page load (Firestore)");
+    window.firebaseDb
+        .collection('tracer-study-submissions')
+        .orderBy('submittedAt', 'desc')
+        .get()
+        .then(snapshot => {
+            const rows = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            allRows = rows;
+            renderRows(allRows);
+            populateFilterOptions(allRows);
+        })
+        .catch(err => {
+            console.error("getAll Firestore error:", err);
+            alert("Failed to fetch records: " + err.message);
+        });
+}
+
+function setupFilterControls() {
+    const searchInput = document.getElementById('searchinput');
+    const deptSelect = document.getElementById('search-dept');
+    const yearSelect = document.getElementById('search-year');
+    const filterBtn = document.getElementById('filter-btn');
+    const clearBtn = document.getElementById('clear-filter-btn');
+
+    if (!searchInput) return;
+
+    searchInput.addEventListener('change', function () {
+        const v = this.value;
+        if (deptSelect) deptSelect.style.display = 'none';
+        if (yearSelect) yearSelect.style.display = 'none';
+        if (filterBtn) filterBtn.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+
+        if (v === 'dept') {
+            if (deptSelect) deptSelect.style.display = '';
+            if (yearSelect) yearSelect.style.display = 'none';
+            if (document.getElementById('search-address')) document.getElementById('search-address').style.display = 'none';
+            if (filterBtn) filterBtn.style.display = '';
+            if (clearBtn) clearBtn.style.display = '';
+        } else if (v === 'yrgrad') {
+            if (deptSelect) deptSelect.style.display = 'none';
+            if (yearSelect) yearSelect.style.display = '';
+            if (document.getElementById('search-address')) document.getElementById('search-address').style.display = 'none';
+            if (filterBtn) filterBtn.style.display = '';
+            if (clearBtn) clearBtn.style.display = '';
+        } else if (v === 'address') {
+            if (deptSelect) deptSelect.style.display = 'none';
+            if (yearSelect) yearSelect.style.display = 'none';
+            if (document.getElementById('search-address')) document.getElementById('search-address').style.display = '';
+            if (filterBtn) filterBtn.style.display = '';
+            if (clearBtn) clearBtn.style.display = '';
+        }
+    });
+
+    filterBtn && filterBtn.addEventListener('click', function () {
+        applyFilter();
+    });
+
+    clearBtn && clearBtn.addEventListener('click', function () {
+        document.getElementById('searchinput').value = '';
+        if (deptSelect) deptSelect.style.display = 'none';
+        if (yearSelect) yearSelect.style.display = 'none';
+        if (filterBtn) filterBtn.style.display = 'none';
+        if (clearBtn) clearBtn.style.display = 'none';
+        renderRows(allRows);
+    });
+}
+
+function populateFilterOptions(rows) {
+    const deptSelect = document.getElementById('search-dept');
+    const yearSelect = document.getElementById('search-year');
+    if (!rows) return;
+
+    const depts = new Set();
+    const years = new Set();
+
+    rows.forEach(r => {
+        const courseCode = (r.Course || r.course || "").toString();
+        const dept = COURSE_DEPT_MAP[courseCode];
+        if (dept) {
+            depts.add(dept);
+        }
+        const yearVal = r.Year_Graduated || r.year_graduated || r.yearGraduated;
+        if (yearVal) {
+            years.add(yearVal.toString());
+        }
+    });
+
+    // populate department select (no "Others")
+    if (deptSelect) {
+        deptSelect.innerHTML = '';
+        const empty = document.createElement('option');
+        empty.value = '';
+        empty.text = 'Select department';
+        deptSelect.appendChild(empty);
+        Array.from(depts).sort().forEach(d => {
+            const o = document.createElement('option');
+            o.value = d;
+            o.text = d;
+            deptSelect.appendChild(o);
+        });
+    }
+
+    // populate year select
+    if (yearSelect) {
+        yearSelect.innerHTML = '';
+        const empty = document.createElement('option');
+        empty.value = '';
+        empty.text = 'Select year';
+        yearSelect.appendChild(empty);
+        Array.from(years)
+            .sort((a, b) => b - a)
+            .forEach(y => {
+                const o = document.createElement('option');
+                o.value = y;
+                o.text = y;
+                yearSelect.appendChild(o);
+            });
+    }
+}
+
+function applyFilter() {
+    const type = document.getElementById('searchinput').value;
+    if (!type) return;
+
+    if (type === 'dept') {
+        const deptSelect = document.getElementById('search-dept');
+        if (!deptSelect) return;
+        const dept = deptSelect.value;
+        if (!dept) return alert('Please select a department');
+
+        const filtered = allRows.filter(r => {
+            const courseCode = (r.Course || r.course || "").toString();
+            const rowDept = COURSE_DEPT_MAP[courseCode];
+            return rowDept === dept;
+        });
+        renderRows(filtered);
+    } else if (type === 'yrgrad') {
+        const year = document.getElementById('search-year').value;
+        if (!year) return alert('Please select a year');
+        const filtered = allRows.filter(r => ((r.Year_Graduated || r.year_graduated || r.yearGraduated) || '').toString() === year);
+        renderRows(filtered);
+    } else if (type === 'address') {
+        const addressInput = document.getElementById('search-address');
+        if (!addressInput) return alert('Address input not found');
+        const keyword = (addressInput.value || '').trim().toLowerCase();
+        if (!keyword) return alert('Please enter an address keyword');
+        const filtered = allRows.filter(r => {
+            const address = (r.Address || r.address || '').toString().toLowerCase();
+            return address.includes(keyword);
+        });
+        renderRows(filtered);
+    }
+}
