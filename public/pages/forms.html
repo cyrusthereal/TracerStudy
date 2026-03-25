@@ -5,6 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forms</title>
+    <base href="/">
+    <script>
+        // force correct route for browser URLs that may include '/public/' or wrong filename
+        const p = window.location.pathname.toLowerCase();
+        if (p.includes('/public/') || p.endsWith('/pages/form.html') || p.endsWith('/public/pages/forms.html')) {
+            window.location.replace('/pages/forms.html');
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
