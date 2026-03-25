@@ -38,7 +38,54 @@ coverage
 # Bower dependency directory (https://bower.io/)
 bower_components
 
-# node-waf configuration
+# node-waf configurationExcellent, we found the exact issue (and this is fixable)
+Great news: the error is clear and specific. Your push is blocked by GitHub Push Protection because firebase-debug.log contains a leaked OAuth token in commit d33a7aa....
+
+🔍 What happened
+Remote rejects push:
+GH013: Repository rule violations for refs/heads/master
+Push cannot contain secrets
+Secret location:
+firebase-debug.log line ~61
+in commit d33a7aa63557b6609512b9f9bfbe45e2fbcdb16d
+🛠️ Step-by-step fix
+Remove secret from file (and ideally from history):
+
+open firebase-debug.log, remove or redact token line(s)
+ideally add to .gitignore (if should never be committed)
+Commit change:
+
+git add firebase-debug.log
+git commit -m "Remove exposed OAuth token from firebase-debug.log"
+Rewrite history to remove secret commits forever
+
+Quick but careful:
+git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch firebase-debug.log' --prune-empty --tag-name-filter cat -- --all
+or better, use BFG:
+bfg --delete-files firebase-debug.log
+then:
+git push --force origin master
+If you must preserve other commits but you can’t rewrite, use GitHub unblock URL (temporary):
+
+the URL in error message: .../security/secret-scanning/unblock-secret/...
+but still remove token from repo; don't commit it again.
+💡 Additional safe steps
+Ensure firebase-debug.log is in .gitignore:
+add line: firebase-debug.log
+Re-run:
+git status
+git log --oneline --graph --decorate --firebase-debug.log (check history)
+Use git show d33a7aa...:firebase-debug.log to confirm the secret is removed from pointed commit in result.
+⚠️ Important security note
+Even after removing from git, rotate that exposed OAuth token immediately in Firebase/GitHub/etc.
+Treat it as compromised, as leak already triggered rule detection.
+
+🎯 Final push
+After clean history + secrets removed:
+
+git push origin master (or --force if history rewritten)
+verify no push protection error.
+You’re almost done; this is exactly the right case where secret-scan blocks the commit and safe re-write is required.
 .lock-wscript
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
@@ -67,3 +114,4 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+firebase-debug.log
