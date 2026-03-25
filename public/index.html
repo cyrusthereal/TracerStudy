@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./pages/login.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1> Log in as Admin </h1>
+
+        <form id="login-form">
+            <div class="input-control">
+                <label for="username"> username</label>
+                <input id="username" name="username" type="text" required>
+                <div class="error"></div>
+            </div>
+
+            <div class="input-control">
+                <label for="password"> Password</label>
+                <input id="password" name="pword" type="password" required>
+                <div class="error"></div>
+            </div>
+
+            <div><button type="submit"> Submit </button></div>
+        </form>
+
+        <p id="login-error" style="color: #c00; margin-top: 0.5rem; display: none;">Invalid username or password.</p>
+    </div>
+
+    <script>
+        (function () {
+            var ADMIN_USER = "admin";
+            var ADMIN_PASS = "admin123";
+
+            document.getElementById("login-form").addEventListener("submit", function (e) {
+                e.preventDefault();
+                var user = document.getElementById("username").value.trim();
+                var pass = document.getElementById("password").value;
+                var errEl = document.getElementById("login-error");
+
+                if (user === ADMIN_USER && pass === ADMIN_PASS) {
+                    sessionStorage.setItem("adminAuth", "1");
+                    window.location.href = "./pages/admin.html";
+                } else {
+                    errEl.style.display = "block";
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>
